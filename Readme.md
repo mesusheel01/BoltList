@@ -1,4 +1,4 @@
-# ***This is a Todo App which uses MERN stack to powerup this application!***
+# **This is a Todo App which uses MERN stack to powerup!**
 - It has two folders frontend and backend
 - Which consist of client side code and server side code.
 
