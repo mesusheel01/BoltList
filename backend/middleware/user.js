@@ -1,17 +1,7 @@
-// Start writing from here
-
 import jwt from 'jsonwebtoken';
 
-const userMiddleware = (req, res, next) => {
+const authenticateUser = (req, res, next) => {
     const partialToken = req.headers.authorization;
-
-    // Check if Authorization header exists and is in the expected format
-    if (!partialToken || !partialToken.startsWith('Bearer ')) {
-        return res.status(401).json({
-            message: 'Unauthorized: No token provided'
-        });
-    }
-
     const token = partialToken.split(' ')[1];
 
     try {
@@ -31,4 +21,4 @@ const userMiddleware = (req, res, next) => {
     }
 };
 
-export default userMiddleware;
+export default authenticateUser;

@@ -2,7 +2,6 @@
 import { Router } from "express";
 import jwt from 'jsonwebtoken'
 import {userValidator} from '../validateBody.js'
-import userMiddleware from '../middleware/user.js'
 import { User } from "../db/index.js";
 import bcrypt from 'bcrypt'
 
@@ -28,11 +27,11 @@ userRouter.post('/signup', async(req,res)=>{
         const hashedPass = await bcrypt.hash(password, saltRounds)
         console.log('hashedpass: ', hashedPass)
         //create the new user
-        await User.create({
+        const newUser = await User.create({
             username,
             password:hashedPass
         })
-        const token = jwt.sign({username}, process.env.JWT_SECRET, {expiresIn: '1h'})
+        const token = jwt.sign({userId: newUser._id, username}, process.env.JWT_SECRET, {expiresIn: '1h'})
         res.status(201).json({
             msg: "User created successfully!",
             token
@@ -73,7 +72,7 @@ userRouter.post('/signin', async (req, res) => {
         }
 
         // Create and return token
-        const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({userId: existingUser._id, username }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({
             msg: "User signed in successfully!",
             token
@@ -85,5 +84,6 @@ userRouter.post('/signin', async (req, res) => {
         });
     }
 });
+
 
 export default userRouter

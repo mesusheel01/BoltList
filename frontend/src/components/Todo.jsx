@@ -56,7 +56,7 @@ const Todo = () => {
     const handleCompletedStatus = async (id) => {
         try {
             const token = localStorage.getItem("token");
-            const markedCompleted = await axios.put(`http://localhost:3000/todo/${id}`, {completed:true}, { 
+            const markedCompleted = await axios.put(`http://localhost:3000/todo/${id}`, {completed:true}, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -69,9 +69,13 @@ const Todo = () => {
             setError(error.message);
         }
     };
-
+    const handleLogout = async()=>{
+        localStorage.removeItem("token")
+        window.location.href='http://localhost:5173'
+    }
 
     return (
+        <div>
         <div>
             <form onSubmit={handleTodoSubmit}>
                 <label htmlFor="New Todo">New Todo: </label>
@@ -84,6 +88,10 @@ const Todo = () => {
                 />
                 <button type='submit'>Add Todo</button>
             </form>
+            <div className='user-detail'>
+                <button onClick={handleLogout}>Logout</button>
+            </div>
+            </div>
             {error && <div style={{ color: "red" }}>{error}</div>}
             <div>
                 {loading ? <div>Loading...</div> :

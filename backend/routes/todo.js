@@ -1,11 +1,10 @@
-//  start writing your code from here
 import { Todo } from "../db/index.js";
 import Router from 'express'
 import { todoValidator } from "../validateBody.js";
-import userMiddleware from "../middleware/user.js";
+import authenticateUser from "../middleware/user.js";
 
 const todoRouter = Router()
-todoRouter.use(userMiddleware)
+todoRouter.use(authenticateUser)
 
 todoRouter.post('/', async(req,res)=>{
     const todoTitle = req.body.title;
