@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios'; // Ensure axios is imported
+import axios from 'axios';
+import Input from './Input';
+import { GiThreePointedShuriken } from 'react-icons/gi';
 
 const Todo = () => {
-    const [loading, setLoading] = useState(false); // Changed to boolean
-    const [error, setError] = useState(null); // Initialize as null
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [newTodo, setNewTodo] = useState("");
     const [todos, setTodos] = useState([]);
 
@@ -11,17 +13,16 @@ const Todo = () => {
         setLoading(true);
         setError(null);
         try {
-            const token = localStorage.getItem("token")
-            const response = await axios.get('http://localhost:3000/todo/',{
-                headers:{
+            const token = localStorage.getItem("token");
+            const response = await axios.get('http://localhost:3000/todo/', {
+                headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             if (response.data) {
                 setTodos(response.data.todos);
-                console.log(response.data.todos)
             } else {
-                setError("Response.data failed");
+                setError("Failed to fetch todos.");
             }
         } catch (err) {
             setError(err.message);
@@ -37,14 +38,14 @@ const Todo = () => {
     const handleTodoSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem("token")
-            const postTodo = await axios.post('http://localhost:3000/todo/', { title: newTodo, completed: false },{
-                headers:{
+            const token = localStorage.getItem("token");
+            const postTodo = await axios.post('http://localhost:3000/todo/', { title: newTodo, completed: false }, {
+                headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             if (postTodo.status === 200) {
-                alert("Todo posted successfully!");
+                alert("Todo added successfully!");
                 setNewTodo("");
                 fetchTodos();
             }
@@ -56,7 +57,7 @@ const Todo = () => {
     const handleCompletedStatus = async (id) => {
         try {
             const token = localStorage.getItem("token");
-            const markedCompleted = await axios.put(`http://localhost:3000/todo/${id}`, {completed:true}, {
+            const markedCompleted = await axios.put(`http://localhost:3000/todo/${id}`, { completed: true }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -69,44 +70,79 @@ const Todo = () => {
             setError(error.message);
         }
     };
-    const handleLogout = async()=>{
-        localStorage.removeItem("token")
-        window.location.href='http://localhost:5173'
-    }
+
+    const handleLogout = async () => {
+        localStorage.removeItem("token");
+        window.location.href = 'http://localhost:5173';
+    };
 
     return (
-        <div>
-        <div>
-            <form onSubmit={handleTodoSubmit}>
-                <label htmlFor="New Todo">New Todo: </label>
-                <input
-                    type="text"
-                    value={newTodo}
-                    onChange={(e) => setNewTodo(e.target.value)}
-                    placeholder='Enter new todo...'
-                    required
-                />
-                <button type='submit'>Add Todo</button>
-            </form>
-            <div className='user-detail'>
-                <button onClick={handleLogout}>Logout</button>
+        <div className="grid lg:grid-cols-5 sm:grid-cols-1  font-mono min-h-screen">
+            <div className="lg:col-span-2 flex items-center justify-center bg-darkBg h-full">
+                <div className="text-orange-300 text-[6rem] sm:text-[4rem] lg:text-[8rem]">📝</div>
             </div>
-            </div>
-            {error && <div style={{ color: "red" }}>{error}</div>}
-            <div>
-                {loading ? <div>Loading...</div> :
-                    <div>
-                        {todos && todos.length > 0 && todos.map((todo) => (
-                            <div key={todo?._id}>
-                                <p style={{
-                                    textDecoration: todo.completed ? "line-through" : 'none'
-                                }} onClick={() => handleCompletedStatus(todo?._id)}>
-                                    {todo?.title}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                }
+
+            <div className="lg:col-span-3 flex flex-col items-center bg-lightBorderColor h-full p-6 gap-6 w-full">
+                <div className="flex justify-end w-full mt-4">
+                    <button
+                        onClick={handleLogout}
+                        className="border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
+                    >
+                        Logout
+                    </button>
+                </div>
+
+                <form onSubmit={handleTodoSubmit} className="flex flex-col items-center gap-4 w-full max-w-sm mt-10">
+                    <Input
+                        type="text"
+                        value={newTodo}
+                        onChange={(e) => setNewTodo(e.target.value)}
+                        placeholder="Enter new todo..."
+                        required
+                    />
+                    <button
+                        type="submit"
+                        className="w-full border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
+                    >
+                        Add Todo
+                    </button>
+                </form>
+
+                {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+
+                <div className="w-full max-w-sm mt-6">
+                    {loading ? (
+                        <div className="text-center text-black hover:text-darkPrimary">Loading...</div>
+                    ) : (
+                        <div className="flex flex-col gap-2">
+                            {todos && todos.length > 0 ? (
+                                todos.map((todo) => (
+                                    <div
+                                        key={todo?._id}
+                                        className="cursor-pointer
+                                        h-12
+                                        border-b
+                                        text-center
+                                        pb-8 border-gray-300
+                                        text-black
+                                        hover:bg-lightPrimary
+                                        hover:text-darkPrimary transition-all duration-300 rounded-xl"
+                                        onClick={() => handleCompletedStatus(todo?._id)}
+                                    >
+                                        <GiThreePointedShuriken className='translate-y-6 ml-4 text-xl' />
+                                        <p
+                                            className={`text-lg ${todo.completed ? "line-through text-gray-500" : "text-gray-800"}`}
+                                        >
+                                            {todo?.title}
+                                        </p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-center text-gray-500">No todos available</p>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
