@@ -32,6 +32,10 @@ const todoModel = new mongoose.Schema({
 
 const userModel = new mongoose.Schema({
     username: String,
+    email: {
+        type: String,
+        unique: true
+    },
     password: String,
 })
 

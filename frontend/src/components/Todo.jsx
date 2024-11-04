@@ -2,12 +2,35 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Input from './Input';
 import { GiThreePointedShuriken } from 'react-icons/gi';
+import { useSnackbar } from 'notistack';
+import { jwtDecode } from 'jwt-decode';
+
+
 
 const Todo = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [newTodo, setNewTodo] = useState("");
     const [todos, setTodos] = useState([]);
+    const {enqueueSnackbar} = useSnackbar()
+    const [username, setUsername] = useState('')
+
+    const fetchUsername = ()=>{
+        try{
+            const token = localStorage.getItem("token")
+            const user = jwtDecode(token)
+            console.log(user)
+            setUsername(user.username)
+        }catch(err){
+            setError(err.message)
+        }
+    }
+
+
+useEffect(()=>{
+    fetchUsername()
+},[])
+
 
     const fetchTodos = async () => {
         setLoading(true);
@@ -45,7 +68,7 @@ const Todo = () => {
                 }
             });
             if (postTodo.status === 200) {
-                alert("Todo added successfully!");
+                enqueueSnackbar("Yeah! New activity is added!",{variant: 'success'})
                 setNewTodo("");
                 fetchTodos();
             }
@@ -65,6 +88,7 @@ const Todo = () => {
             if (markedCompleted.status === 200) {
                 alert("Todo marked as completed!");
                 fetchTodos();
+                enqueueSnackbar("Todo marked as completed",{variant:'success'})
             }
         } catch (error) {
             setError(error.message);
@@ -73,14 +97,14 @@ const Todo = () => {
 
     const handleLogout = async () => {
         localStorage.removeItem("token");
-        window.location.href = 'http://localhost:5173';
+        window.location.href = 'http://localhost:5173/';
     };
 
     return (
         <div className="grid lg:grid-cols-5 grid-rows-4 font-mono min-h-screen">
-            <div className="lg:col-span-2 row-span-1 flex items-center justify-center bg-darkBg lg:min-h-screen">
-                <div>
-                    
+            <div className="lg:col-span-2 row-span-1 flex flex-col items-center justify-center bg-darkBg lg:min-h-screen">
+                <div className='bg-darkPrimary p-4 text-xl rounded-xl hover:bg-gradient-to-tr hover:from-blue-300 hover:to-pink-300'>
+                    {username}
                 </div>
                 <div className="text-orange-300 text-[4rem] sm:text-[4rem] lg:text-[8rem]">📝</div>
             </div>
@@ -88,7 +112,10 @@ const Todo = () => {
             <div className="lg:col-span-3 row-span-3 relative flex flex-col items-center bg-lightBorderColor lg:h-full lg:w-full">
                 <div className="flex justify-end w-full mt-4">
                     <button
-                        onClick={handleLogout}
+                        onClick={()=>{
+                            enqueueSnackbar("Logged out successfully!",{variant: 'success'})
+                            handleLogout()
+                            }}
                         className="border-2 absolute right-4 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-300 rounded-xl"
                     >
                         Logout

@@ -20,7 +20,6 @@ todoRouter.post('/', async(req,res)=>{
             title: todoTitle,
             completed: false
         })
-        console.log(newTodo)
         res.json({
             msg: "Todo created succesfully",
             newTodo

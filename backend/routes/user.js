@@ -1,7 +1,6 @@
-//  start writing your code from here
 import { Router } from "express";
 import jwt from 'jsonwebtoken'
-import {userValidator} from '../validateBody.js'
+import {signUpValidator, signInValidator} from '../validateBody.js'
 import { User } from "../db/index.js";
 import bcrypt from 'bcrypt'
 
@@ -9,15 +8,15 @@ const userRouter = Router()
 
 userRouter.post('/signup', async(req,res)=>{
     const bodyToValidate = req.body
-    const isValidated = userValidator.safeParse(bodyToValidate)
+    const isValidated = signUpValidator.safeParse(bodyToValidate)
     if(!isValidated.success){
         return res.json({
             msg: "Inputs are not valid, enter inputs in correct format!"
         })
     }
-    const {username,password} = bodyToValidate
+    const {username, email, password} = bodyToValidate
     try{
-        const existingUser = await User.findOne({username})
+        const existingUser = await User.findOne({email})
         if(existingUser){
             return res.status(409).json({
                 msg: "User already exists!"
@@ -25,10 +24,10 @@ userRouter.post('/signup', async(req,res)=>{
         }
         const saltRounds = 12
         const hashedPass = await bcrypt.hash(password, saltRounds)
-        console.log('hashedpass: ', hashedPass)
         //create the new user
         const newUser = await User.create({
             username,
+            email,
             password:hashedPass
         })
         const token = jwt.sign({userId: newUser._id, username}, process.env.JWT_SECRET, {expiresIn: '1h'})
@@ -45,7 +44,7 @@ userRouter.post('/signup', async(req,res)=>{
 
 userRouter.post('/signin', async (req, res) => {
     const bodyToValidate = req.body;
-    const isValidated = userValidator.safeParse(bodyToValidate);
+    const isValidated = signInValidator.safeParse(bodyToValidate);
     if (!isValidated.success) {
         return res.status(400).json({
             msg: "Inputs are not valid, enter inputs in the correct format!"
@@ -55,7 +54,7 @@ userRouter.post('/signin', async (req, res) => {
     const { username, password } = bodyToValidate;
 
     try {
-        // Check if user exists
+        // check if user exists
         const existingUser = await User.findOne({ username });
         if (!existingUser) {
             return res.status(404).json({
@@ -63,7 +62,6 @@ userRouter.post('/signin', async (req, res) => {
             });
         }
 
-        // Verify password
         const isPasswordValid = await bcrypt.compare(password, existingUser.password);
         if (!isPasswordValid) {
             return res.status(401).json({
@@ -71,14 +69,12 @@ userRouter.post('/signin', async (req, res) => {
             });
         }
 
-        // Create and return token
         const token = jwt.sign({userId: existingUser._id, username }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({
             msg: "User signed in successfully!",
             token
         });
     } catch (err) {
-        console.error(err);
         res.status(500).json({
             msg: "Error during signing in"
         });

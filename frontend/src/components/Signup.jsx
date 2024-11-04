@@ -4,11 +4,10 @@ import DynamicTextComponent from './DynamicText';
 import Input from './Input';
 import { useNavigate } from 'react-router-dom';
 import { MdOutlineOfflineBolt } from 'react-icons/md';
-import {toast} from 'react-toastify'
 import { FaUser } from 'react-icons/fa';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import { IoIosMail } from 'react-icons/io';
-import Signin from './Signin';
+import { useSnackbar } from 'notistack';
 
 const Signup = () => {
     const [username, setUsername] = useState("");
@@ -18,6 +17,7 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const navigate = useNavigate();
+    const enqueueSnackbar = useSnackbar()
 
     const navigateTo = () => {
         navigate('/signin');
@@ -32,9 +32,8 @@ const Signup = () => {
             const response = await axios.post('http://localhost:3000/user/signup', { username,email, password });
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
-                toast('Signup successful');
                 navigateTo();
-
+                enqueueSnackbar("Signed Up successfully", {variant: "success"})
             } else {
                 setError(response.data.msg);
             }

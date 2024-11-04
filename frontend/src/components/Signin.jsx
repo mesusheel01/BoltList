@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Todo from './Todo';
 import DynamicTextComponent from './DynamicText';
 import { useNavigate } from 'react-router-dom';
 import { MdOutlineOfflineBolt } from 'react-icons/md';
 import { FaUser } from 'react-icons/fa';
 import Input from './Input';
 import { RiLockPasswordFill } from 'react-icons/ri';
+import { useSnackbar } from 'notistack';
+
 
 const Signin = () => {
     const [username, setUsername] = useState("");
@@ -15,6 +16,8 @@ const Signin = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("")
     const navigate = useNavigate()
+    const {enqueueSnackbar } = useSnackbar()
+
     const navigateTo =()=>{
         navigate('/todo')
 }
@@ -28,6 +31,7 @@ const Signin = () => {
             const response = await axios.post('http://localhost:3000/user/signin', { username, password });
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
+                enqueueSnackbar("Signed in Successfully",{variant:"success"})
                 navigateTo()
             } else {
                 setError("Invalid credentials!");
@@ -43,7 +47,7 @@ const Signin = () => {
     return (
         <div className='grid lg:grid-cols-5 sm:grid-cols-1 font-mono min-h-screen'>
             <div className='lg:col-span-2 flex items-center justify-center bg-darkBg h-full'>
-                <MdOutlineOfflineBolt className='text-orange-300 text-[6rem] sm:text-[8rem] lg:text-[12rem]' />
+                <MdOutlineOfflineBolt className='text-orange-300 text-[6rem] sm:text-[8rem] lg:text-[12rem] ' />
             </div>
 
             <div className='lg:col-span-3 flex flex-col items-center bg-lightBorderColor h-full gap-12 w-full p-6'>
@@ -59,7 +63,7 @@ const Signin = () => {
                                 type='text'
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder='Enter your username...'
+                                placeholder='e.g John Doe'
                                 required
                                 className='pl-10'
                             />

@@ -1,13 +1,17 @@
-import mongoose from 'mongoose';
 import zod from 'zod'
 
 
-const userValidator = zod.object({
+const signUpValidator = zod.object({
+    username: zod.string().min(6),
+    email: zod.string().email(),
+    password: zod.string().min(6)
+})
+const signInValidator = zod.object({
     username: zod.string(),
-    password: zod.string()
+    password: zod.string().min(6)
 })
 
 const todoValidator = zod.string();
 
 
-export {userValidator, todoValidator}
+export {signUpValidator,signInValidator, todoValidator}
