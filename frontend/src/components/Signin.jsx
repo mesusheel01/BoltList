@@ -28,7 +28,6 @@ const Signin = () => {
             const response = await axios.post('http://localhost:3000/user/signin', { username, password });
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
-                console.log(response.data.token);
                 navigateTo()
             } else {
                 setError("Invalid credentials!");
@@ -81,7 +80,7 @@ const Signin = () => {
 
                         <button
                             className='mt-4 w-full border-2 p-2 border-gray-400 hover:bg-lightPrimary text-lightPrimary hover:text-lightBorderColor
-                            ml-1 sm:ml-4 transition-all duration-500 rounded-xl'
+                            ml-1 sm:ml-4 transition-all duration-300 rounded-xl'
                             type="submit"
                             disabled={loading}>
                             {loading ? "Signing in..." : "Sign In"}
