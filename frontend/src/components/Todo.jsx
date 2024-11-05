@@ -97,7 +97,7 @@ useEffect(()=>{
 
     const handleLogout = async () => {
         localStorage.removeItem("token");
-        window.location.href = 'http://localhost:5173/';
+        window.location.href = 'https://bolt-list.vercel.app';
     };
 
 
