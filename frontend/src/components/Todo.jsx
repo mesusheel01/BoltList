@@ -37,7 +37,7 @@ useEffect(()=>{
         setError(null);
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get('http://localhost:3000/todo/', {
+            const response = await axios.get('https://bolt-list-backend.vercel.app/todo/', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -62,7 +62,7 @@ useEffect(()=>{
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-            const postTodo = await axios.post('http://localhost:3000/todo/', { title: newTodo, completed: false }, {
+            const postTodo = await axios.post('https://bolt-list-backend.vercel.app/todo/', { title: newTodo, completed: false }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -80,7 +80,7 @@ useEffect(()=>{
     const handleCompletedStatus = async (id) => {
         try {
             const token = localStorage.getItem("token");
-            const markedCompleted = await axios.put(`http://localhost:3000/todo/${id}`, { completed: true }, {
+            const markedCompleted = await axios.put(`https://bolt-list-backend.vercel.app/todo/${id}`, { completed: true }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
