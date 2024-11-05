@@ -19,7 +19,7 @@ const Signin = () => {
     const {enqueueSnackbar } = useSnackbar()
 
     const navigateTo =()=>{
-        navigate('/todo')
+        navigate('/Todo')
 }
 
     const handleSignIn = async (e) => {
