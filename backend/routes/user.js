@@ -16,12 +16,14 @@ userRouter.post('/signup', async(req,res)=>{
     }
     const {username, email, password} = bodyToValidate
     try{
+        console.log('Before user check signup')
         const existingUser = await User.findOne({email})
         if(existingUser){
             return res.status(409).json({
                 msg: "User already exists!"
             })
         }
+        console.log('after user check signup')
         const saltRounds = 12
         const hashedPass = await bcrypt.hash(password, saltRounds)
         //create the new user
@@ -55,12 +57,15 @@ userRouter.post('/signin', async (req, res) => {
 
     try {
         // check if user exists
+
+        console.log('Before user check signin')
         const existingUser = await User.findOne({ username });
         if (!existingUser) {
             return res.status(404).json({
                 msg: "User does not exist. Please sign up first."
             });
         }
+        console.log('after user check signin')
 
         const isPasswordValid = await bcrypt.compare(password, existingUser.password);
         if (!isPasswordValid) {
