@@ -28,7 +28,7 @@ const Signin = () => {
         setError(null);
 
         try {
-            const response = await axios.post('https://bolt-list-backend.vercel.app/user/signin', { username, password });
+            const response = await axios.post('https://bolt-list-server.vercel.app/user/signin', { username, password });
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
                 enqueueSnackbar("Signed in Successfully",{variant:"success"})

@@ -29,7 +29,7 @@ const Signup = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post('https://bolt-list-backend.vercel.app/user/signup', { username,email, password });
+            const response = await axios.post('https://bolt-list-server.vercel.app/user/signup', { username,email, password });
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
                 navigateTo();
