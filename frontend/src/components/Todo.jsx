@@ -4,6 +4,7 @@ import Input from './Input';
 import { GiThreePointedShuriken } from 'react-icons/gi';
 import { useSnackbar } from 'notistack';
 import { jwtDecode } from 'jwt-decode';
+import { FaUserNinja } from 'react-icons/fa';
 
 
 
@@ -14,18 +15,17 @@ const Todo = () => {
     const [todos, setTodos] = useState([]);
     const {enqueueSnackbar} = useSnackbar()
     const [username, setUsername] = useState('')
+    const [moveNinja, setMoveNinja] = useState(false)
 
     const fetchUsername = ()=>{
         try{
             const token = localStorage.getItem("token")
             const user = jwtDecode(token)
-            console.log(user)
             setUsername(user.username)
         }catch(err){
             setError(err.message)
         }
     }
-
 
 useEffect(()=>{
     fetchUsername()
@@ -100,16 +100,22 @@ useEffect(()=>{
         window.location.href = 'http://localhost:5173/';
     };
 
+
     return (
         <div className="grid lg:grid-cols-5 grid-rows-4 font-mono min-h-screen">
-            <div className="lg:col-span-2 row-span-1 flex flex-col items-center justify-center bg-darkBg lg:min-h-screen">
-                <div className='bg-darkPrimary p-4 text-xl rounded-xl hover:bg-gradient-to-tr hover:from-blue-300 hover:to-pink-300'>
-                    {username}
-                </div>
+            <div className="lg:col-span-2 row-span-1 flex flex-col items-center justify-center bg-darkBg h-screen">
+            <div
+            onMouseEnter={() => setMoveNinja(true)}
+            onMouseLeave={() => setMoveNinja(false)}
+            className="bg-darkPrimary p-4 text-xl rounded-xl hover:bg-gradient-to-tr hover:from-blue-300 hover:to-pink-300 transition-transform duration-500"
+        >
+            <FaUserNinja className={`${moveNinja ? "translate-x-16" : "translate-x-0"} transition-transform duration-300`} />
+            {username}
+        </div>
                 <div className="text-orange-300 text-[4rem] sm:text-[4rem] lg:text-[8rem]">📝</div>
             </div>
 
-            <div className="lg:col-span-3 row-span-3 relative flex flex-col items-center bg-lightBorderColor lg:h-full lg:w-full">
+            <div className="lg:col-span-3 row-span-3 relative flex flex-col items-center bg-lightBorderColor h-screen lg:w-full">
                 <div className="flex justify-end w-full mt-4">
                     <button
                         onClick={()=>{

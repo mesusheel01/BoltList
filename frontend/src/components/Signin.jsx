@@ -37,7 +37,6 @@ const Signin = () => {
                 setError("Invalid credentials!");
             }
         } catch (err) {
-            console.error(err);
             setError("An error occurred during Signing In.");
         } finally {
             setLoading(false);

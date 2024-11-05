@@ -16,6 +16,10 @@ app.use(cors({
     allowedHeaders: '*'
 }))
 
+//test route
+app.get('/', (req,res)=>{
+    res.send("Hello!")
+})
 //routes
 app.use('/user', userRouter)
 app.use('/todo', todoRouter)
