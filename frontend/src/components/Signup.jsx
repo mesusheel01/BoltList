@@ -87,9 +87,9 @@ const Signup = () => {
                         </div>
                         <div className="relative">
                             <RiLockPasswordFill className='absolute left-3 top-5 text-gray-500' />
-                            {isVisible? <IoEyeOffOutline className='absolute left-[22rem] top-5 text-gray-500 hover:text-black' onClick={()=>setIsVisible(!isVisible)}
+                            {isVisible? <IoEyeOffOutline className='absolute left-72 sm:left-[22rem] top-5 text-gray-500 hover:text-black' onClick={()=>setIsVisible(!isVisible)}
                             /> : <IoEyeOutline onClick={()=>setIsVisible(!isVisible)}
-                                className='absolute left-[22rem] top-5 text-gray-500 hover:text-black'
+                                className='absolute left-72 sm:left-[22rem] top-5 text-gray-500 hover:text-black'
                             />
                             }
                             <Input
