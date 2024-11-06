@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import DynamicTextComponent from './DynamicText';
 import Input from './Input';
@@ -8,6 +8,8 @@ import { FaUser } from 'react-icons/fa';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import { IoIosMail } from 'react-icons/io';
 import { useSnackbar } from 'notistack';
+import { IoEyeOffOutline } from "react-icons/io5";
+import { IoEyeOutline } from "react-icons/io5";
 
 const Signup = () => {
     const [username, setUsername] = useState("");
@@ -16,6 +18,8 @@ const Signup = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
+    const [isVisible, setIsVisible] = useState(true)
+
     const navigate = useNavigate();
     const enqueueSnackbar = useSnackbar()
 
@@ -71,6 +75,7 @@ const Signup = () => {
                         </div>
                         <div className='relative'>
                             <IoIosMail className='absolute left-2.5 top-5 text-gray-500 text-[1.1rem]' />
+
                             <Input
                                 type='email'
                                 value={email}
@@ -82,8 +87,13 @@ const Signup = () => {
                         </div>
                         <div className="relative">
                             <RiLockPasswordFill className='absolute left-3 top-5 text-gray-500' />
+                            {isVisible? <IoEyeOffOutline className='absolute left-[22rem] top-5 text-gray-500 hover:text-black' onClick={()=>setIsVisible(!isVisible)}
+                            /> : <IoEyeOutline onClick={()=>setIsVisible(!isVisible)}
+                                className='absolute left-[22rem] top-5 text-gray-500 hover:text-black'
+                            />
+                            }
                             <Input
-                                type='password'
+                                type={isVisible?"password":"text"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder='Enter your password...'

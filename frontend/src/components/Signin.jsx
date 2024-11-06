@@ -7,6 +7,7 @@ import { FaUser } from 'react-icons/fa';
 import Input from './Input';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import { useSnackbar } from 'notistack';
+import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 
 
 const Signin = () => {
@@ -15,8 +16,11 @@ const Signin = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("")
+    const [isVisible, setIsVisible] = useState(true)
+
     const navigate = useNavigate()
     const {enqueueSnackbar } = useSnackbar()
+
 
     const navigateTo =()=>{
         navigate('/Todo')
@@ -69,10 +73,14 @@ const Signin = () => {
                         </div>
 
                         <div className="relative">
-                            <RiLockPasswordFill className='absolute left-3 top-5 text-gray-500' />
-
+                            <RiLockPasswordFill className='absolute left-3  top-5 text-gray-500' />
+                            {isVisible? <IoEyeOffOutline className='absolute left-[22rem] top-5 text-gray-500 hover:text-black' onClick={()=>setIsVisible(!isVisible)}
+                            /> : <IoEyeOutline onClick={()=>setIsVisible(!isVisible)}
+                                className='absolute left-[22rem] top-5 text-gray-500 hover:text-black'
+                            />
+                            }
                             <Input
-                                type='password'
+                                type={isVisible ? "password": "text"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder='Enter your password...'
