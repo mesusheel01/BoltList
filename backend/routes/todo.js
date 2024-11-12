@@ -47,11 +47,7 @@ todoRouter.get('/', async(req,res)=>{
 todoRouter.put('/:id', async(req,res)=>{
     const {id} = req.params
     const completePayload = req.body
-    if(typeof completePayload.completed === 'undefined'){
-        return res.status(400).json({
-            msg:"you must provide a completed status"
-        })
-    }
+    
     try {
 
         await Todo.updateOne({_id: id}, {completed: completePayload.completed})
@@ -64,5 +60,28 @@ todoRouter.put('/:id', async(req,res)=>{
         })
     }
 })
+
+// added delete route
+todoRouter.delete('/:id', async(req,res)=>{
+    const id = req.params.id
+    try{
+        const todo = await Todo.deleteOne({_id: id})
+        if(todo){
+            console.log(todo._id)
+            res.status(200).json({
+                msg: "Todo deleted successfully!"
+            })
+        }else{
+            res.json({
+                msg: "Todo doesn't exist"
+            })
+        }
+    }catch(err){
+        res.json({
+            msg: "Error fetching todo with the given id!"
+        })
+    }
+})
+
 
 export default todoRouter

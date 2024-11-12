@@ -5,7 +5,7 @@ import {TbPointFilled} from 'react-icons/tb'
 import { useSnackbar } from 'notistack';
 import { jwtDecode } from 'jwt-decode';
 import { FaUserNinja } from 'react-icons/fa';
-
+import { AiFillDelete } from "react-icons/ai";
 
 
 const Todo = () => {
@@ -48,6 +48,7 @@ useEffect(()=>{
                 setError("Failed to fetch todos.");
             }
         } catch (err) {
+            enqueueSnackbar("Something is up with the server!", {variant:"error"})
             setError(err.message);
         } finally {
             setLoading(false);
@@ -62,6 +63,7 @@ useEffect(()=>{
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
+            //by Default the todo will be uncompleted so we are sending the completed as false status to our backend
             const postTodo = await axios.post('https://bolt-list-server.vercel.app/todo/', { title: newTodo, completed: false }, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -73,6 +75,7 @@ useEffect(()=>{
                 fetchTodos();
             }
         } catch (error) {
+            enqueueSnackbar("Something is up with the server!", {variant: "error"})
             setError(error.message);
         }
     };
@@ -86,7 +89,6 @@ useEffect(()=>{
                 }
             });
             if (markedCompleted.status === 200) {
-                alert("Todo marked as completed!");
                 fetchTodos();
                 enqueueSnackbar("Todo marked as completed",{variant:'success'})
             }
@@ -94,6 +96,25 @@ useEffect(()=>{
             setError(error.message);
         }
     };
+    //added the delete functionality here! after version 1.1.0
+    const deleteTodo = async(id)=>{
+
+        try{
+            const token = localStorage.getItem("token")
+            const todo = await axios.delete(`https://bolt-list-server.vercel.app/todo/${id}`,{
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if(todo.status == 200){
+                fetchTodos()
+                enqueueSnackbar("Todo deleted!", {variant:"success"})
+            }
+
+        }catch(err){
+            setError(err.messgae)
+        }
+    }
 
     const handleLogout = async () => {
         localStorage.removeItem("token");
@@ -154,6 +175,7 @@ useEffect(()=>{
                     <div className="flex flex-col gap-2">
                         {todos && todos.length > 0 ? (
                             todos.map((todo) => (
+                            <div className='relative'>
                                 <div
                                     key={todo?._id}
                                     className="cursor-pointer border-2 text-center border-gray-400 text-black hover:bg-lightPrimary hover:text-darkPrimary transition-all duration-300 rounded-xl w-full p-2"
@@ -166,6 +188,8 @@ useEffect(()=>{
                                         </p>
                                     </div>
                                 </div>
+                                        <AiFillDelete className='absolute bottom-3 transition-transform  duration-300 hover:rotate-180 left-[18.5rem] text-2xl md:left-[22.5rem]' onClick={()=>deleteTodo(todo?._id)} />
+                            </div>
                             ))
                         ) : (
                             <p className="text-center text-gray-500">No todos available</p>

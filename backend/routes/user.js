@@ -8,6 +8,9 @@ const userRouter = Router()
 
 userRouter.post('/signup', async(req,res)=>{
     const bodyToValidate = req.body
+    bodyToValidate.email = bodyToValidate.email.trim()
+    bodyToValidate.username = bodyToValidate.username.trim()
+    
     const isValidated = signUpValidator.safeParse(bodyToValidate)
     if(!isValidated.success){
         return res.json({
@@ -15,6 +18,7 @@ userRouter.post('/signup', async(req,res)=>{
         })
     }
     const {username, email, password} = bodyToValidate
+
     try{
 
         const existingUser = await User.findOne({email})
@@ -44,6 +48,7 @@ userRouter.post('/signup', async(req,res)=>{
 
 userRouter.post('/signin', async (req, res) => {
     const bodyToValidate = req.body;
+    bodyToValidate.username = bodyToValidate.username.trim()
     const isValidated = signInValidator.safeParse(bodyToValidate);
     if (!isValidated.success) {
         return res.status(400).json({
