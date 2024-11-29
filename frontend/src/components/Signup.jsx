@@ -116,7 +116,7 @@ const Signup = () => {
                     )}
                 <div className='flex gap-1 pl-6 lg:pl-20 sm:pl-14 pt-4 lg:pt-8 md:pt-6 '>
                     <p className='text-gray-400'>Already have an account? </p>
-                    <a href='https://bolt-list.vercel.app/Signin'>Signin</a>
+                    <button onClick={()=>navigate('/Signin')}>Signin</button>
                 </div>
                 </div>
             </div>
