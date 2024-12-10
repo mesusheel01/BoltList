@@ -14,7 +14,8 @@
 - Then use *node index.js* or *nodemon index.js* to powerup the backend
 
 ## **Frontend**
-- On the frontend setup we have used React as a frontend building framework.
+- On the frontend setup I have used React as a frontend building framework.
 - I have used NotiStack for notifications on any operations.
 - I have used TailwindCss for designing a fully  responsive page for all the three routes.
 - On the tailwind.config.js  I have added my own colors for the webpage.
+- The complete design is my own creativity hope its good as it is for me.
