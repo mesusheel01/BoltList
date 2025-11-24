@@ -174,7 +174,7 @@ const Todo = () => {
                         required
                         className="w-full"
                     />
-                    <div className=''>
+                    <div className='flex gap-3'>
                         <button
                             type="submit"
                             className="w-full md:w-[14rem] lg:w-full border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
@@ -184,7 +184,7 @@ const Todo = () => {
                         <button
                             type="submit"
                             onClick={handleClearAll}
-                            className="w-[4rem] border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
+                            className="w-[6rem] border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
                         >
                             Clear All
                         </button>
