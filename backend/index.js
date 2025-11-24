@@ -11,19 +11,19 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-    origin: 'https://bolt-list.vercel.app',
+    origin: ['https://bolt-list.vercel.app', 'http://localhost:5173/'],
     methods: '*',
     allowedHeaders: '*'
 }))
 
 //test route
-app.get('/', (req,res)=>{
+app.get('/', (req, res) => {
     res.send("Hello!")
 })
 //routes
 app.use('/user', userRouter)
 app.use('/todo', todoRouter)
 
-app.listen(process.env.PORT, ()=> {
+app.listen(process.env.PORT, () => {
     console.log(`Server is listening at http://localhost:${process.env.PORT}`)
 })

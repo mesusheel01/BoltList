@@ -6,15 +6,15 @@ import authenticateUser from "../middleware/user.js";
 const todoRouter = Router()
 todoRouter.use(authenticateUser)
 
-todoRouter.post('/', async(req,res)=>{
+todoRouter.post('/', async (req, res) => {
     const todoTitle = req.body.title;
-    const  isValidated = todoValidator.safeParse(todoTitle)
-    if(!isValidated.success){
+    const isValidated = todoValidator.safeParse(todoTitle)
+    if (!isValidated.success) {
         return res.json({
             msg: 'Input correct inputs!'
         })
     }
-    try{
+    try {
         const newTodo = await Todo.create({
             userId: req.userId,
             title: todoTitle,
@@ -24,16 +24,16 @@ todoRouter.post('/', async(req,res)=>{
             msg: "Todo created succesfully",
             newTodo
         })
-    }catch(err){
+    } catch (err) {
         res.status(500).json({
             msg: 'Error during creating Todo!'
         })
     }
 })
 
-todoRouter.get('/', async(req,res)=>{
+todoRouter.get('/', async (req, res) => {
     try {
-        const todos = await Todo.find({userId: req.userId})
+        const todos = await Todo.find({ userId: req.userId })
         res.json({
             todos: todos
         })
@@ -44,13 +44,13 @@ todoRouter.get('/', async(req,res)=>{
     }
 })
 
-todoRouter.put('/:id', async(req,res)=>{
-    const {id} = req.params
+todoRouter.put('/:id', async (req, res) => {
+    const { id } = req.params
     const completePayload = req.body
-    
+
     try {
 
-        await Todo.updateOne({_id: id}, {completed: completePayload.completed})
+        await Todo.updateOne({ _id: id }, { completed: completePayload.completed })
         res.json({
             msg: "todo marked as completed!"
         })
@@ -62,26 +62,40 @@ todoRouter.put('/:id', async(req,res)=>{
 })
 
 // added delete route
-todoRouter.delete('/:id', async(req,res)=>{
+todoRouter.delete('/:id', async (req, res) => {
     const id = req.params.id
-    try{
-        const todo = await Todo.deleteOne({_id: id})
-        if(todo){
+    try {
+        const todo = await Todo.deleteOne({ _id: id })
+        if (todo) {
             console.log(todo._id)
             res.status(200).json({
                 msg: "Todo deleted successfully!"
             })
-        }else{
+        } else {
             res.json({
                 msg: "Todo doesn't exist"
             })
         }
-    }catch(err){
+    } catch (err) {
         res.json({
             msg: "Error fetching todo with the given id!"
         })
     }
 })
 
+//delete all todos realted to user
+todoRouter.delete("", async (req, res) => {
+    const userId = req.userId
+    try {
+        const todos = await Todo.deleteMany({ userId: userId })
+        res.json({
+            msg: "All todos deleted successfully!"
+        })
+    } catch (error) {
+        res.status(500).json({
+            msg: "Error deleting todos!"
+        })
+    }
+})
 
 export default todoRouter
