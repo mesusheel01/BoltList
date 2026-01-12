@@ -34,7 +34,7 @@ userRouter.post('/signup', async(req,res)=>{
             email,
             password:hashedPass
         })
-        const token = jwt.sign({userId: newUser._id, username}, process.env.JWT_SECRET, {expiresIn: '1h'})
+        const token = jwt.sign({userId: newUser._id, username}, process.env.JWT_SECRET, {expiresIn: '1d'})
         res.status(201).json({
             msg: "User created successfully!",
             token
@@ -74,7 +74,7 @@ userRouter.post('/signin', async (req, res) => {
             });
         }
 
-        const token = jwt.sign({userId: existingUser._id, username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({userId: existingUser._id, username }, process.env.JWT_SECRET, { expiresIn: '1d' });
         res.json({
             msg: "User signed in successfully!",
             token
