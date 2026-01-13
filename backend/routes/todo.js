@@ -49,10 +49,18 @@ todoRouter.put('/:id', async (req, res) => {
     const completePayload = req.body
 
     try {
+        // Security: Verify the todo belongs to the authenticated user
+        const todo = await Todo.findOne({ _id: id, userId: req.userId })
 
-        await Todo.updateOne({ _id: id }, { completed: completePayload.completed })
+        if (!todo) {
+            return res.status(404).json({
+                msg: "Todo not found or you don't have permission to update it"
+            })
+        }
+
+        await Todo.updateOne({ _id: id, userId: req.userId }, { completed: completePayload.completed })
         res.json({
-            msg: "todo marked as completed!"
+            msg: "Todo marked as completed!"
         })
     } catch (error) {
         res.status(500).json({
@@ -65,20 +73,21 @@ todoRouter.put('/:id', async (req, res) => {
 todoRouter.delete('/:id', async (req, res) => {
     const id = req.params.id
     try {
-        const todo = await Todo.deleteOne({ _id: id })
-        if (todo) {
-            console.log(todo._id)
-            res.status(200).json({
-                msg: "Todo deleted successfully!"
-            })
-        } else {
-            res.json({
-                msg: "Todo doesn't exist"
+        // Security: Only delete if the todo belongs to the authenticated user
+        const todo = await Todo.deleteOne({ _id: id, userId: req.userId })
+
+        if (todo.deletedCount === 0) {
+            return res.status(404).json({
+                msg: "Todo not found or you don't have permission to delete it"
             })
         }
+
+        res.status(200).json({
+            msg: "Todo deleted successfully!"
+        })
     } catch (err) {
-        res.json({
-            msg: "Error fetching todo with the given id!"
+        res.status(500).json({
+            msg: "Error deleting todo!"
         })
     }
 })

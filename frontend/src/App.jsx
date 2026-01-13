@@ -1,9 +1,10 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useNavigate} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Signup from './components/Signup';
 import Signin from './components/Signin';
 import Button from './components/Button';
 import Todo from './components/Todo';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 const App = () => {
@@ -11,10 +12,14 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Home />}/>
-                    <Route path="/Signup" element={<Signup />} />
-                    <Route path="/Signin" element={<Signin />} />
-                    <Route path='/Todo' element={<Todo />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/Signup" element={<Signup />} />
+                <Route path="/Signin" element={<Signin />} />
+                <Route path='/Todo' element={
+                    <ProtectedRoute>
+                        <Todo />
+                    </ProtectedRoute>
+                } />
             </Routes>
         </BrowserRouter>
     );

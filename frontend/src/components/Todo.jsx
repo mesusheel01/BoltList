@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 import { jwtDecode } from 'jwt-decode';
 import { FaUserNinja } from 'react-icons/fa';
 import { AiFillDelete } from "react-icons/ai";
+import { useNavigate } from 'react-router-dom';
 import useSound from 'use-sound'
 import clear from '../sounds/clearAll.mp3'
 import error from '../sounds/error.mp3'
@@ -19,6 +20,7 @@ const Todo = () => {
     const [newTodo, setNewTodo] = useState("");
     const [todos, setTodos] = useState([]);
     const { enqueueSnackbar } = useSnackbar()
+    const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [moveNinja, setMoveNinja] = useState(false)
 
@@ -154,11 +156,18 @@ const Todo = () => {
         }
     }
 
-    const handleLogout = async () => {
-        localStorage.removeItem("token");
-        window.location.href = `${import.meta.env.VITE_FRONTEND_URL}`;
+    const handleLogout = () => {
+        // Play sound and show notification first
         logoutSound()
-        enqueueSnackbar("Logout ho gya mitra!", { variant: "success" })
+        enqueueSnackbar("Logged out successfully!", { variant: "success" })
+
+        // Clear token
+        localStorage.removeItem("token");
+
+        // Navigate to home page after a short delay to allow sound/notification to execute
+        setTimeout(() => {
+            navigate('/');
+        }, 300);
     };
 
 
