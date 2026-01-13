@@ -76,7 +76,7 @@ const Todo = () => {
             });
             if (clearAll.status == 200) {
                 clearSound()
-                fetchTodos()
+                setTodos([])
                 enqueueSnackbar("All todos cleared!", { variant: "success" })
             }
         } catch (err) {
@@ -103,7 +103,7 @@ const Todo = () => {
                 addTodoSound()
                 enqueueSnackbar("Yeah! New activity is added!", { variant: 'success' })
                 setNewTodo("");
-                fetchTodos();
+                setTodos(prev => [postTodo.data.newTodo, ...prev])
             }
         } catch (error) {
             errorSound()
@@ -122,7 +122,10 @@ const Todo = () => {
             });
             if (markedCompleted.status === 200) {
                 completeSound()
-                fetchTodos();
+                setTodos(prev => prev.map(todo =>
+                    todo._id === id ? { ...todo, completed: true } : todo
+                ))
+                console.log(todos)
                 enqueueSnackbar("Todo marked as completed", { variant: 'success' })
             }
         } catch (error) {
@@ -141,7 +144,7 @@ const Todo = () => {
                 }
             })
             if (todo.status == 200) {
-                fetchTodos()
+                setTodos(prev => prev.filter(todo => todo._id !== id))
                 enqueueSnackbar("Todo deleted!", { variant: "success" })
             }
 
