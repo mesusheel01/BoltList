@@ -10,6 +10,8 @@ import { IoIosMail } from 'react-icons/io';
 import { useSnackbar } from 'notistack';
 import { IoEyeOffOutline } from "react-icons/io5";
 import { IoEyeOutline } from "react-icons/io5";
+import useSound from 'use-sound'
+import done from '../sounds/done2.mp3'
 
 const Signup = () => {
     const [username, setUsername] = useState("");
@@ -19,6 +21,7 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [isVisible, setIsVisible] = useState(true)
+    const [play] = useSound(done);
 
     const navigate = useNavigate();
     const enqueueSnackbar = useSnackbar()
@@ -33,11 +36,12 @@ const Signup = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post('https://bolt-list-server.vercel.app/user/signup', { username,email, password });
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/signup`, { username, email, password });
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
+                play();
+                enqueueSnackbar("Signed Up successfully", { variant: "success" })
                 navigateTo();
-                enqueueSnackbar("Signed Up successfully", {variant: "success"})
             } else {
                 setError(response.data.msg);
             }
@@ -87,13 +91,13 @@ const Signup = () => {
                         </div>
                         <div className="relative">
                             <RiLockPasswordFill className='absolute left-3 top-5 text-gray-500' />
-                            {isVisible? <IoEyeOffOutline className='absolute left-72 sm:left-[22rem] top-5 text-gray-500 hover:text-black' onClick={()=>setIsVisible(!isVisible)}
-                            /> : <IoEyeOutline onClick={()=>setIsVisible(!isVisible)}
+                            {isVisible ? <IoEyeOffOutline className='absolute left-72 sm:left-[22rem] top-5 text-gray-500 hover:text-black' onClick={() => setIsVisible(!isVisible)}
+                            /> : <IoEyeOutline onClick={() => setIsVisible(!isVisible)}
                                 className='absolute left-72 sm:left-[22rem] top-5 text-gray-500 hover:text-black'
                             />
                             }
                             <Input
-                                type={isVisible?"password":"text"}
+                                type={isVisible ? "password" : "text"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder='Enter your password...'
@@ -114,10 +118,10 @@ const Signup = () => {
                             <p className='text-red-500 text-center'>{error}</p>
                         </div>
                     )}
-                <div className='flex gap-1 pl-6 lg:pl-20 sm:pl-14 pt-4 lg:pt-8 md:pt-6 '>
-                    <p className='text-gray-400'>Already have an account? </p>
-                    <button onClick={()=>navigate('/Signin')}>Signin</button>
-                </div>
+                    <div className='flex gap-1 pl-6 lg:pl-20 sm:pl-14 pt-4 lg:pt-8 md:pt-6 '>
+                        <p className='text-gray-400'>Already have an account? </p>
+                        <button onClick={() => navigate('/Signin')}>Signin</button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -8,7 +8,8 @@ import Input from './Input';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import { useSnackbar } from 'notistack';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
-
+import useSound from 'use-sound'
+import isDone from '../sounds/done2.mp3'
 
 const Signin = () => {
     const [username, setUsername] = useState("");
@@ -17,14 +18,15 @@ const Signin = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("")
     const [isVisible, setIsVisible] = useState(true)
+    const [play] = useSound(isDone)
 
     const navigate = useNavigate()
-    const {enqueueSnackbar } = useSnackbar()
+    const { enqueueSnackbar } = useSnackbar()
 
 
-    const navigateTo =()=>{
+    const navigateTo = () => {
         navigate('/Todo')
-}
+    }
 
     const handleSignIn = async (e) => {
         e.preventDefault();
@@ -32,10 +34,11 @@ const Signin = () => {
         setError(null);
 
         try {
-            const response = await axios.post('https://bolt-list-server.vercel.app/user/signin', { username, password });
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/signin`, { username, password });
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
-                enqueueSnackbar("Signed in Successfully",{variant:"success"})
+                play()
+                enqueueSnackbar("Signed in Successfully", { variant: "success" })
                 navigateTo()
             } else {
                 setError("Invalid credentials!");
@@ -74,13 +77,13 @@ const Signin = () => {
 
                         <div className="relative">
                             <RiLockPasswordFill className='absolute left-3  top-5 text-gray-500' />
-                            {isVisible? <IoEyeOffOutline className='absolute left-72 sm:left-[22rem] top-5 text-gray-500 hover:text-black' onClick={()=>setIsVisible(!isVisible)}
-                            /> : <IoEyeOutline onClick={()=>setIsVisible(!isVisible)}
+                            {isVisible ? <IoEyeOffOutline className='absolute left-72 sm:left-[22rem] top-5 text-gray-500 hover:text-black' onClick={() => setIsVisible(!isVisible)}
+                            /> : <IoEyeOutline onClick={() => setIsVisible(!isVisible)}
                                 className='absolute left-72 sm:left-[22rem] top-5 text-gray-500 hover:text-black'
                             />
                             }
                             <Input
-                                type={isVisible ? "password": "text"}
+                                type={isVisible ? "password" : "text"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder='Enter your password...'

@@ -37,7 +37,7 @@ const Todo = () => {
         setError(null);
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get('https://bolt-list-server.vercel.app/todo/', {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/todo`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -57,7 +57,7 @@ const Todo = () => {
     const handleClearAll = async () => {
         try {
             const token = localStorage.getItem("token");
-            const clearAll = await axios.delete('https://bolt-list-server.vercel.app/todo/', {
+            const clearAll = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/todo`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -80,7 +80,7 @@ const Todo = () => {
         try {
             const token = localStorage.getItem("token");
             //by Default the todo will be uncompleted so we are sending the completed as false status to our backend
-            const postTodo = await axios.post('https://bolt-list-server.vercel.app/todo/', { title: newTodo, completed: false }, {
+            const postTodo = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/todo`, { title: newTodo, completed: false }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -99,7 +99,7 @@ const Todo = () => {
     const handleCompletedStatus = async (id) => {
         try {
             const token = localStorage.getItem("token");
-            const markedCompleted = await axios.put(`https://bolt-list-server.vercel.app/todo/${id}`, { completed: true }, {
+            const markedCompleted = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/todo/${id}`, { completed: true }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -117,7 +117,7 @@ const Todo = () => {
 
         try {
             const token = localStorage.getItem("token")
-            const todo = await axios.delete(`https://bolt-list-server.vercel.app/todo/${id}`, {
+            const todo = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/todo/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -134,7 +134,7 @@ const Todo = () => {
 
     const handleLogout = async () => {
         localStorage.removeItem("token");
-        window.location.href = 'https://bolt-list.vercel.app';
+        window.location.href = `${import.meta.env.VITE_FRONTEND_URL}`;
     };
 
 

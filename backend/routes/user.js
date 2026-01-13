@@ -1,28 +1,28 @@
 import { Router } from "express";
 import jwt from 'jsonwebtoken'
-import {signUpValidator, signInValidator} from '../validateBody.js'
+import { signUpValidator, signInValidator } from '../validateBody.js'
 import { User } from "../db/index.js";
 import bcrypt from 'bcrypt'
 
 const userRouter = Router()
 
-userRouter.post('/signup', async(req,res)=>{
+userRouter.post('/signup', async (req, res) => {
     const bodyToValidate = req.body
     bodyToValidate.email = bodyToValidate.email.trim()
     bodyToValidate.username = bodyToValidate.username.trim()
-    
+
     const isValidated = signUpValidator.safeParse(bodyToValidate)
-    if(!isValidated.success){
+    if (!isValidated.success) {
         return res.json({
             msg: "Inputs are not valid, enter inputs in correct format!"
         })
     }
-    const {username, email, password} = bodyToValidate
+    const { username, email, password } = bodyToValidate
 
-    try{
+    try {
 
-        const existingUser = await User.findOne({email})
-        if(existingUser){
+        const existingUser = await User.findOne({ email })
+        if (existingUser) {
             return res.status(409).json({
                 msg: "User already exists!"
             })
@@ -32,16 +32,16 @@ userRouter.post('/signup', async(req,res)=>{
         const newUser = await User.create({
             username,
             email,
-            password:hashedPass
+            password: hashedPass
         })
-        const token = jwt.sign({userId: newUser._id, username}, process.env.JWT_SECRET, {expiresIn: '1d'})
+        const token = jwt.sign({ userId: newUser._id, username }, process.env.JWT_SECRET, { expiresIn: '1d' })
         res.status(201).json({
             msg: "User created successfully!",
             token
         })
-    }catch(err){
+    } catch (err) {
         res.json({
-            msg:"Error during user creation"
+            msg: "Error during user creation"
         })
     }
 })
@@ -74,7 +74,7 @@ userRouter.post('/signin', async (req, res) => {
             });
         }
 
-        const token = jwt.sign({userId: existingUser._id, username }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ userId: existingUser._id, username }, process.env.JWT_SECRET, { expiresIn: '1d' });
         res.json({
             msg: "User signed in successfully!",
             token
