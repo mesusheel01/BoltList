@@ -80,6 +80,7 @@ const Todo = () => {
                 enqueueSnackbar("All todos cleared!", { variant: "success" })
             }
         } catch (err) {
+            errorSound()
             setError(err.message)
         }
     }
@@ -105,6 +106,7 @@ const Todo = () => {
                 fetchTodos();
             }
         } catch (error) {
+            errorSound()
             enqueueSnackbar("Something is up with the server!", { variant: "error" })
             setError(error.message);
         }
@@ -124,6 +126,7 @@ const Todo = () => {
                 enqueueSnackbar("Todo marked as completed", { variant: 'success' })
             }
         } catch (error) {
+            errorSound()
             setError(error.message);
         }
     };
@@ -143,6 +146,7 @@ const Todo = () => {
             }
 
         } catch (err) {
+            errorSound()
             setError(err.messgae)
         }
     }

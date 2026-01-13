@@ -12,6 +12,8 @@ import { IoEyeOffOutline } from "react-icons/io5";
 import { IoEyeOutline } from "react-icons/io5";
 import useSound from 'use-sound'
 import done from '../sounds/done2.mp3'
+import error from '../sounds/error.mp3'
+
 
 const Signup = () => {
     const [username, setUsername] = useState("");
@@ -21,7 +23,10 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [isVisible, setIsVisible] = useState(true)
+
+
     const [play] = useSound(done);
+    const [errorSound] = useSound(error)
 
     const navigate = useNavigate();
     const enqueueSnackbar = useSnackbar()
@@ -46,6 +51,7 @@ const Signup = () => {
                 setError(response.data.msg);
             }
         } catch (err) {
+            errorSound()
             setError("An error occurred during signup.");
         } finally {
             setLoading(false);

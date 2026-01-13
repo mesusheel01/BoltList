@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 import useSound from 'use-sound'
 import isDone from '../sounds/done2.mp3'
+import error from '../sounds/error.mp3'
 
 const Signin = () => {
     const [username, setUsername] = useState("");
@@ -18,7 +19,9 @@ const Signin = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("")
     const [isVisible, setIsVisible] = useState(true)
+
     const [play] = useSound(isDone)
+    const [errorSound] = useSound(error)
 
     const navigate = useNavigate()
     const { enqueueSnackbar } = useSnackbar()
@@ -44,6 +47,7 @@ const Signin = () => {
                 setError("Invalid credentials!");
             }
         } catch (err) {
+            errorSound()
             setError("An error occurred during Signing In.");
         } finally {
             setLoading(false);
