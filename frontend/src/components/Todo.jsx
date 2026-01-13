@@ -6,7 +6,12 @@ import { useSnackbar } from 'notistack';
 import { jwtDecode } from 'jwt-decode';
 import { FaUserNinja } from 'react-icons/fa';
 import { AiFillDelete } from "react-icons/ai";
-
+import useSound from 'use-sound'
+import clear from '../sounds/clearAll.mp3'
+import error from '../sounds/error.mp3'
+import add from '../sounds/created.mp3'
+import logout from '../sounds/logout.mp3'
+import complete from '../sounds/completed.mp3'
 
 const Todo = () => {
     const [loading, setLoading] = useState(false);
@@ -16,6 +21,13 @@ const Todo = () => {
     const { enqueueSnackbar } = useSnackbar()
     const [username, setUsername] = useState('')
     const [moveNinja, setMoveNinja] = useState(false)
+
+    //sounds
+    const [addTodoSound] = useSound(add)
+    const [errorSound] = useSound(error)
+    const [clearSound] = useSound(clear)
+    const [logoutSound] = useSound(logout)
+    const [completeSound] = useSound(complete)
 
     const fetchUsername = () => {
         try {
@@ -63,6 +75,7 @@ const Todo = () => {
                 }
             });
             if (clearAll.status == 200) {
+                clearSound()
                 fetchTodos()
                 enqueueSnackbar("All todos cleared!", { variant: "success" })
             }
@@ -86,6 +99,7 @@ const Todo = () => {
                 }
             });
             if (postTodo.status === 200) {
+                addTodoSound()
                 enqueueSnackbar("Yeah! New activity is added!", { variant: 'success' })
                 setNewTodo("");
                 fetchTodos();
@@ -105,6 +119,7 @@ const Todo = () => {
                 }
             });
             if (markedCompleted.status === 200) {
+                completeSound()
                 fetchTodos();
                 enqueueSnackbar("Todo marked as completed", { variant: 'success' })
             }
@@ -135,6 +150,8 @@ const Todo = () => {
     const handleLogout = async () => {
         localStorage.removeItem("token");
         window.location.href = `${import.meta.env.VITE_FRONTEND_URL}`;
+        logoutSound()
+        enqueueSnackbar("Logout ho gya mitra!", { variant: "success" })
     };
 
 
@@ -155,10 +172,7 @@ const Todo = () => {
             <div className="col-span-3  flex flex-col items-center bg-lightBorderColor h-screen w-full">
                 <div className="flex justify-end w-full mt-4 pr-4 md:pr-2">
                     <button
-                        onClick={() => {
-                            enqueueSnackbar("Logged out successfully!", { variant: 'success' });
-                            handleLogout();
-                        }}
+                        onClick={handleLogout}
                         className="border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-300 rounded-xl"
                     >
                         Logout
@@ -177,14 +191,14 @@ const Todo = () => {
                     <div className='flex gap-3'>
                         <button
                             type="submit"
-                            className="w-full md:w-[14rem] lg:w-full border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
+                            className="border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
                         >
                             Add Todo
                         </button>
                         <button
                             type="submit"
                             onClick={handleClearAll}
-                            className="w-[6rem] border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
+                            className="border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
                         >
                             Clear All
                         </button>
