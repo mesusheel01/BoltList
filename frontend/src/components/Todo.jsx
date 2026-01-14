@@ -7,6 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import { FaUserNinja } from 'react-icons/fa';
 import { AiFillDelete } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
+import { FiEdit } from 'react-icons/fi'
 import useSound from 'use-sound'
 import clear from '../sounds/clearAll.mp3'
 import error from '../sounds/error.mp3'
@@ -23,6 +24,9 @@ const Todo = () => {
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [moveNinja, setMoveNinja] = useState(false)
+    const [isTodoEditing, setIsTodoEditing] = useState(false)
+    const [editTodoId, setEditTodoId] = useState(null)
+    const [streak, setStreak] = useState(0)
 
     //sounds
     const [addTodoSound] = useSound(add)
@@ -58,6 +62,7 @@ const Todo = () => {
             });
             if (response.data) {
                 setTodos(response.data.todos);
+                setStreak(response.data.streak || 0);
             } else {
                 setError("Failed to fetch todos.");
             }
@@ -79,6 +84,7 @@ const Todo = () => {
             if (clearAll.status == 200) {
                 clearSound()
                 setTodos([])
+                setNewTodo("")
                 enqueueSnackbar("All todos cleared!", { variant: "success" })
             }
         } catch (err) {
@@ -103,9 +109,10 @@ const Todo = () => {
             });
             if (postTodo.status === 200) {
                 addTodoSound()
-                enqueueSnackbar("Yeah! New activity is added!", { variant: 'success' })
+                enqueueSnackbar("New activity added! Keep the streak going!", { variant: 'success' })
                 setNewTodo("");
                 setTodos(prev => [postTodo.data.newTodo, ...prev])
+                setStreak(postTodo.data.streak)
             }
         } catch (error) {
             errorSound()
@@ -114,18 +121,18 @@ const Todo = () => {
         }
     };
 
-    const handleCompletedStatus = async (id) => {
+    const handleCompletedStatus = async (todo) => {
         try {
             const token = localStorage.getItem("token");
-            const markedCompleted = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/todo/${id}`, { completed: true }, {
+            const markedCompleted = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/todo/${todo?._id}`, { completed: !todo.completed }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             if (markedCompleted.status === 200) {
                 completeSound()
-                setTodos(prev => prev.map(todo =>
-                    todo._id === id ? { ...todo, completed: true } : todo
+                setTodos(prev => prev.map(item =>
+                    item._id === todo._id ? { ...item, completed: !item.completed } : item
                 ))
                 console.log(todos)
                 enqueueSnackbar("Todo marked as completed", { variant: 'success' })
@@ -156,6 +163,39 @@ const Todo = () => {
         }
     }
 
+    // handle todo edit functionality - Start Editing
+    const handleTodoEdit = (e, todo) => {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent the parent div's onClick from firing
+        setIsTodoEditing(true);
+        setEditTodoId(todo._id);
+        setNewTodo(todo.title);
+    }
+
+    // Handle Update Todo - Save Changes
+    const handleUpdateTodo = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token')
+            const updateTodo = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/todo/${editTodoId}`, { title: newTodo }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if (updateTodo.status === 200) {
+                setTodos(prev => prev.map(item => item._id === editTodoId ? { ...item, title: newTodo } : item))
+                completeSound()
+                enqueueSnackbar("Todo updated successfully!", { variant: 'success' })
+                setIsTodoEditing(false);
+                setEditTodoId(null);
+                setNewTodo("");
+            }
+        } catch (error) {
+            errorSound()
+            enqueueSnackbar("Failed to update todo", { variant: "error" })
+        }
+    }
+
     const handleLogout = () => {
         // Play sound and show notification first
         logoutSound()
@@ -183,10 +223,16 @@ const Todo = () => {
                     {username}
                 </div>
                 <div className="text-orange-300 absolute top-10 md:top-20 text-[3rem] md:text-[4rem] lg:text-[6rem]">📝</div>
+                <div className="absolute top-4 left-4 text-xl sm:hidden text-white">
+                    🔥 Streak: {streak}
+                </div>
             </div>
 
-            <div className="col-span-3  flex flex-col items-center bg-lightBorderColor h-screen w-full">
-                <div className="flex justify-end w-full mt-4 pr-4 md:pr-2">
+            <div className="col-span-3 min-h-screen flex flex-col items-center bg-lightBorderColor w-full">
+                <div className="flex justify-between w-full mt-4 px-4 md:pr-2">
+                    <div className="text-2xl font-bold text-black hidden sm:block">
+                        🔥 Streak: {streak}
+                    </div>
                     <button
                         onClick={handleLogout}
                         className="border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-300 rounded-xl"
@@ -195,12 +241,12 @@ const Todo = () => {
                     </button>
                 </div>
 
-                <form onSubmit={handleTodoSubmit} className="flex flex-col items-center gap-4 w-full max-w-xs md:max-w-sm mt-6 md:mt-10 px-4">
+                <form onSubmit={!isTodoEditing ? handleTodoSubmit : (e) => handleUpdateTodo(e)} className="flex flex-col items-center gap-4 w-full max-w-xs md:max-w-sm mt-6 md:mt-10 px-4">
                     <Input
                         type="text"
                         value={newTodo}
                         onChange={(e) => setNewTodo(e.target.value)}
-                        placeholder="Enter new todo..."
+                        placeholder={isTodoEditing ? "Update your todo..." : "Enter new todo..."}
                         required
                         className="w-full"
                     />
@@ -209,7 +255,7 @@ const Todo = () => {
                             type="submit"
                             className="border-2 px-4 py-2 text-lightPrimary border-gray-400 hover:bg-lightPrimary hover:text-lightBorderColor transition-all duration-500 rounded-xl"
                         >
-                            Add Todo
+                            {isTodoEditing ? "Update Todo" : "Add Todo"}
                         </button>
                         <button
                             type="submit"
@@ -233,15 +279,20 @@ const Todo = () => {
                                     <div className='relative'>
                                         <div
                                             key={todo?._id}
-                                            className="cursor-pointer border-2 text-center border-gray-400 text-black hover:bg-lightPrimary hover:text-darkPrimary transition-all duration-300 rounded-xl w-full p-2"
-                                            onClick={() => handleCompletedStatus(todo?._id)}
+                                            className="cursor-pointer  flex items-center gap-2 border-2 border-gray-400 text-black hover:bg-lightPrimary hover:text-darkPrimary transition-all duration-300 rounded-xl w-full p-2"
+
                                         >
-                                            <div className="flex items-center justify-start gap-2">
-                                                <TbPointFilled />
-                                                <p className={`text-lg ${todo.completed ? "line-through text-gray-500" : "text-gray-800"} hover:text-darkPrimary`}>
-                                                    {todo?.title}
-                                                </p>
-                                            </div>
+                                            <p className={`text-lg w-[80%] flex-1 text-left break-words ${todo.completed ? "line-through text-gray-500" : "text-gray-800"} hover:text-darkPrimary`}
+                                                onClick={() => handleCompletedStatus(todo)}
+                                            >
+                                                {todo?.title}
+
+                                            </p>
+                                            <button
+                                                onClick={(e) => handleTodoEdit(e, todo)}
+                                                className="flex-shrink-0">
+                                                <FiEdit />
+                                            </button>
                                         </div>
                                         <AiFillDelete className='absolute bottom-3 transition-transform  duration-300 hover:rotate-180 left-[18.5rem] text-2xl md:left-[22.5rem]' onClick={() => deleteTodo(todo?._id)} />
                                     </div>

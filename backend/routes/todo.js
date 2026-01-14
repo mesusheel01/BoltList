@@ -1,4 +1,4 @@
-import { Todo } from "../db/index.js";
+import { Todo, User } from "../db/index.js";
 import Router from 'express'
 import { todoValidator } from "../validateBody.js";
 import authenticateUser from "../middleware/user.js";
@@ -20,9 +20,35 @@ todoRouter.post('/', async (req, res) => {
             title: todoTitle,
             completed: false
         })
+
+        // Streak Logic
+        const user = await User.findById(req.userId);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize to midnight
+
+        let lastTaskDate = user.lastTaskDate ? new Date(user.lastTaskDate) : null;
+        if (lastTaskDate) lastTaskDate.setHours(0, 0, 0, 0);
+
+        if (!lastTaskDate) {
+            // First ever task
+            user.streak = 1;
+        } else if (lastTaskDate.getTime() === today.getTime()) {
+            // Already did a task today - streak stays same
+        } else if (today.getTime() - lastTaskDate.getTime() === 86400000) {
+            // Last task was yesterday (difference is 1 day in ms)
+            user.streak += 1;
+        } else {
+            // Missed a day or more
+            user.streak = 1;
+        }
+
+        user.lastTaskDate = new Date();
+        await user.save();
+
         res.json({
             msg: "Todo created succesfully",
-            newTodo
+            newTodo,
+            streak: user.streak
         })
     } catch (err) {
         res.status(500).json({
@@ -33,9 +59,11 @@ todoRouter.post('/', async (req, res) => {
 
 todoRouter.get('/', async (req, res) => {
     try {
-        const todos = await Todo.find({ userId: req.userId })
+        const todos = await Todo.find({ userId: req.userId }).sort({ _id: -1 }) // Sorted for convenience
+        const user = await User.findById(req.userId);
         res.json({
-            todos: todos
+            todos: todos,
+            streak: user ? user.streak : 0
         })
     } catch (error) {
         res.status(500).json({
@@ -44,10 +72,12 @@ todoRouter.get('/', async (req, res) => {
     }
 })
 
+
 todoRouter.put('/:id', async (req, res) => {
     const { id } = req.params
-    const completePayload = req.body
+    const payload = req.body
 
+    console.log(payload)
     try {
         // Security: Verify the todo belongs to the authenticated user
         const todo = await Todo.findOne({ _id: id, userId: req.userId })
@@ -58,9 +88,9 @@ todoRouter.put('/:id', async (req, res) => {
             })
         }
 
-        await Todo.updateOne({ _id: id, userId: req.userId }, { completed: completePayload.completed })
+        await Todo.updateOne({ _id: id, userId: req.userId }, { $set: payload })
         res.json({
-            msg: "Todo marked as completed!"
+            msg: `Todo ${payload.completed ? `Todo marked as ${payload.completed ? "completed" : "not completed"}` : "Todo updated successfully!"}!`
         })
     } catch (error) {
         res.status(500).json({
