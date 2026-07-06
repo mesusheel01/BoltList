@@ -5,9 +5,15 @@ import userRouter from './routes/user.js'
 import todoRouter from './routes/todo.js'
 import cors from 'cors'
 import './db/index.js'
+import rateLimit from 'express-rate-limit'
 dotenv.config()
 
 const app = express()
+const limiter = rateLimit({
+    windowMs: 60*200,
+    max: 5,
+    msg: "Too many requests from this IP, please try again after a minute!"
+})
 
 app.use(express.json())
 app.use(cors({
@@ -16,6 +22,7 @@ app.use(cors({
     allowedHeaders: '*'
 }))
 
+app.use(limiter)
 //test route
 app.get('/', (req, res) => {
     res.send("Hello!")
@@ -24,6 +31,6 @@ app.get('/', (req, res) => {
 app.use('/user', userRouter)
 app.use('/todo', todoRouter)
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server is listening at http://localhost:${process.env.PORT}`)
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`Server is listening at http://localhost:${process.env.PORT|| 3000}`)
 })
